@@ -173,11 +173,23 @@ public class BinomialHeap
 	 */
 	public void meld(BinomialHeap heap2)
 	{
+		if(this.empty()) {
+			this.last = heap2.last;
+			this.min = heap2.min;
+			this.size = heap2.size;
+			return;
+		}
+
+		if(heap2.empty()) {
+			return;
+		}
+
 		//we fix the fields of min and size accordingly
 		this.min = (min.item.key < heap2.min.item.key) ? min : heap2.min;
 		this.size += heap2.size;
 
 		BinomialHeap meldedHeap = new BinomialHeap();
+
 		int higherRank = (last.rank > heap2.last.rank) ? last.rank : heap2.last.rank;
 		//we create three arrays, the first two representing the 2 heaps and the last one representing the final heap
 		HeapNode[] heapThisArray = new HeapNode[higherRank+1];
@@ -186,16 +198,29 @@ public class BinomialHeap
 
 		//here we add the nodes to the arrays according to the rank (index =rank)
 		HeapNode currentNode = last.next;
-		while (currentNode != last) {
-			heapThisArray[currentNode.rank] = currentNode;
-			currentNode = currentNode.next;
+		if (currentNode.next != last){
+			while (currentNode != last) {
+				heapThisArray[currentNode.rank] = currentNode;
+				currentNode = currentNode.next;
+			}
 		}
+		else {
+			heapThisArray[currentNode.rank] = currentNode;
+		}
+
 		heapThisArray[last.rank] = last;
 		currentNode = heap2.last;
-		while (currentNode != heap2.last) {
-			heap2Array[currentNode.rank] = currentNode;
-			currentNode = currentNode.next;
+
+		if (currentNode.next != last){
+			while (currentNode != heap2.last) {
+				heap2Array[currentNode.rank] = currentNode;
+				currentNode = currentNode.next;
+			}
 		}
+		else {
+			heap2Array[currentNode.rank] = currentNode;
+		}
+
 		heap2Array[heap2.last.rank] = heap2.last;
 
 		HeapNode remainder = null;
@@ -213,6 +238,7 @@ public class BinomialHeap
 				if(remainder != null)
 				{
 					finalHeap[i] = remainder;
+					finalHeap[i].rank = i;
 				}
 				remainder = linkedHeapNode;
 			}
@@ -229,6 +255,7 @@ public class BinomialHeap
 					else
 					{
 						finalHeap[i] = currHeapNode1;
+						finalHeap[i].rank = i;
 					}
 				}
 				//only second tree exists
@@ -243,6 +270,7 @@ public class BinomialHeap
 						else
 						{
 							finalHeap[i] = currHeapNode2;
+							finalHeap[i].rank = i;
 						}
 					}
 					//there exists no trees of rank i
@@ -250,6 +278,7 @@ public class BinomialHeap
 						if(remainder != null)
 						{
 							finalHeap[i] = remainder;
+							finalHeap[i].rank = i;
 							remainder = null;
 						}
 					}
@@ -257,8 +286,13 @@ public class BinomialHeap
 			}
 		}
 
+		if(remainder != null){
+			finalHeap[higherRank+1] = remainder;
+			finalHeap[higherRank+1].rank = higherRank+1;
+		}
+
 		//we found the last node (the node with the highest rank)
-		for(int i = finalHeap.length; i <= 0; i--)
+		for(int i = finalHeap.length-1; i >= 0; i--)
 		{
 			if(finalHeap[i] != null)
 			{
@@ -266,6 +300,7 @@ public class BinomialHeap
 				break;
 			}
 		}
+
 		HeapNode currentHeap = meldedHeap.last;
 		//we add to the new heap all the nodes in finalHeap array
 		for (int i = 0; i < finalHeap.length; i++) {
@@ -364,6 +399,7 @@ public class BinomialHeap
 				tree1.child.next = tree2;
 			}
 			tree1.child = tree2;
+			tree1.rank++;
 			tree2.parent = tree1;
 
 			return tree1;
