@@ -100,7 +100,7 @@ public class BinomialHeap
 	 * Return the minimal HeapItem of the new Tree
 	 *
 	 */
-	private HeapItem findNewMin()
+	private void findNewMin()
 	{
 		HeapNode currentNode = new HeapNode();
 		currentNode = last;
@@ -144,13 +144,13 @@ public class BinomialHeap
 			// Update the reference in the nodes
 			HeapNode tempNode = currentNode.item.node;
 			currentNode.item.node = currentNode.parent.item.node;
-			currentNode.parent.node = tempNode;
+			currentNode.parent.item.node = tempNode;
 		
 			currentNode = currentNode.parent;
 		}
 		//change the min if necessary
 		if (item.key < min.item.key) {
-			min = item; // Update the min node if necessary
+			min.item = item; // Update the min node if necessary
 		}
 	}
 
@@ -198,7 +198,7 @@ public class BinomialHeap
 		}
 		heap2Array[heap2.last.rank] = heap2.last;
 
-		Heapode remainder = null;
+		HeapNode remainder = null;
 	
 		for(int i = 0; i <= higherRank; i++)
 		{
@@ -238,6 +238,7 @@ public class BinomialHeap
 						if(remainder != null)
 						{
 							HeapNode linkedHeapNode = HeapNode.link(currHeapNode2, remainder);
+							remainder = linkedHeapNode;
 						}
 						else
 						{
@@ -330,6 +331,9 @@ public class BinomialHeap
 		public HeapNode next;
 		public HeapNode parent;
 		public int rank;
+
+		public HeapNode() {
+		}
 
 		/**
 		 * Constructor for HeapNode class with parameters.
